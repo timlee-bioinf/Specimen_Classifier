@@ -1,0 +1,10 @@
+{
+  "model": "ResNet50",
+  "dataset": "InHouse_0603",
+  "training_samples": {
+    "Carabidae": 129,
+    "Chrysomelidae": 166,
+    "Other": 165,
+    "Staphylinidae": 115
+  }
+}
