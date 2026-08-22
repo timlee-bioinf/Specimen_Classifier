@@ -1,0 +1,15 @@
+{
+  "model": "ResNet50",
+  "dataset": "InHouse_0603",
+  "training_samples": {
+    "Carabidae": 132,
+    "Cerambycidae": 285,
+    "Chrysomelidae": 784,
+    "Corylophidae": 125,
+    "Curculionidae": 962,
+    "Other": 980,
+    "Ptilodactylidae": 165,
+    "Scarabaeidae": 507,
+    "Staphylinidae": 214
+  }
+}

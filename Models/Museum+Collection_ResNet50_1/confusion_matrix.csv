@@ -1,0 +1,10 @@
+,Carabidae,Cerambycidae,Chrysomelidae,Corylophidae,Curculionidae,Other,Ptilodactylidae,Scarabaeidae,Staphylinidae
+Carabidae,30,1,0,0,1,1,0,0,0
+Cerambycidae,0,66,0,0,0,0,1,1,0
+Chrysomelidae,0,0,190,0,0,4,1,0,2
+Corylophidae,0,0,0,28,0,3,0,0,0
+Curculionidae,1,1,9,0,218,11,0,1,0
+Other,0,1,6,3,4,225,2,2,3
+Ptilodactylidae,0,0,1,0,0,2,37,1,0
+Scarabaeidae,0,0,0,0,0,1,0,131,0
+Staphylinidae,0,1,2,0,3,4,0,0,45

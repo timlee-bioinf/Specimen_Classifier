@@ -1,0 +1,19 @@
+# Raw/derived image datasets -- kept local only, not version-controlled directly
+Data/Collection/
+Data/Museum/
+Data/InHouse_June/
+Data/InHouse_July/
+Data/Merged_Collection_Museum/
+Data/Merged_Collection_Museum_Toy/
+
+# Generated evaluation/presentation output -- regenerable from Code/Compare_Models_on_Dataset.py
+Presentation_Plots/
+
+# Python / editor cruft
+Code/__pycache__/
+__pycache__/
+.vscode/
+*.stackdump
+
+# Working scratch files
+broken_files_list.txt
