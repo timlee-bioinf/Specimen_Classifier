@@ -1,8 +1,13 @@
-# Tested using the following:
+# Tested using the following (Anaconda's base environment):
 
-Python==3.9.18
-tensorflow==2.6.0
+Python==3.12.8
+tensorflow==2.21.0
 numpy
+pandas
 matplotlib
-sklearn
+scikit-learn
 Pillow
+
+# numpy, pandas, matplotlib, scikit-learn, and Pillow all ship with the default
+# Anaconda installer. The only package you need to install yourself is tensorflow:
+#   pip install tensorflow
