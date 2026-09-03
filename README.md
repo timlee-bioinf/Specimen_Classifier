@@ -12,9 +12,10 @@ The interactive classifier is internally named **EcoVision**; you'll see that na
 - [Trained model format](#trained-model-format)
 - [Getting started](#getting-started)
 - [Usage](#usage)
-  - [1. Train a model](#1-train-a-model)
-  - [2. Compare models / generate presentation plots](#2-compare-models--generate-presentation-plots)
-  - [3. Run the interactive classifier](#3-run-the-interactive-classifier)
+  - [1. Split a category folder into training/testing](#1-split-a-category-folder-into-trainingtesting)
+  - [2. Train a model](#2-train-a-model)
+  - [3. Compare models / generate presentation plots](#3-compare-models--generate-presentation-plots)
+  - [4. Run the interactive classifier](#4-run-the-interactive-classifier)
 - [Troubleshooting](#troubleshooting)
 - [Contributors](#contributors)
 - [License](#license)
@@ -23,6 +24,7 @@ The interactive classifier is internally named **EcoVision**; you'll see that na
 
 | Notebook / script | Purpose |
 |---|---|
+| [`Code/Split_Dataset.ipynb`](Code/Split_Dataset.ipynb) | Randomly splits a folder of images sorted by category into the `training`/`testing` layout the other notebooks expect, at a ratio you choose. |
 | [`Code/Train_Model.ipynb`](Code/Train_Model.ipynb) | Trains a transfer-learned ResNet-50 classifier on your own image folders and saves the resulting model, metrics, and metadata. |
 | [`Code/Compare_Models_on_Dataset.ipynb`](Code/Compare_Models_on_Dataset.ipynb) | Runs one or more trained models against a shared evaluation dataset and produces ROC/PR curves and confusion matrices for side-by-side comparison. |
 | [`Code/Model_UI.ipynb`](Code/Model_UI.ipynb) | Launches a desktop GUI (no coding required) for classifying a single image or a whole folder with a trained model, including a Grad-CAM heatmap of what the model focused on. |
@@ -34,10 +36,11 @@ All three read from and write to two shared top-level folders: `Data/` (your ima
 ```
 Specimen_Classifier/
 ├── Code/
-│   ├── Train_Model.ipynb              Train a new ResNet-50 classifier
-│   ├── Model_UI.ipynb                 Desktop GUI for running inference with a trained model
+│   ├── Split_Dataset.ipynb             Randomly split a category-sorted folder into training/testing
+│   ├── Train_Model.ipynb               Train a new ResNet-50 classifier
+│   ├── Model_UI.ipynb                  Desktop GUI for running inference with a trained model
 │   ├── Compare_Models_on_Dataset.ipynb Batch-evaluate & plot ROC/PR curves and confusion matrices
-│   └── Python-Requirements.txt        Pinned dependency versions
+│   └── Python-Requirements.txt         Pinned dependency versions
 │
 ├── Data/                              ⚠ not tracked in git — populate this folder locally
 │   └── <dataset name>/
@@ -113,6 +116,9 @@ Each subfolder of `Models/` is one training run, named after that run's `model_r
 
 ### Setup
 
+**Windows:** run the git-related commands below in **Git Bash** (installed alongside Git for Windows) — they won't work as-is in Command Prompt or PowerShell. Run the `pip install` command in **Anaconda Prompt** specifically, not Git Bash — Git Bash can silently resolve `python`/`pip` to the wrong install (e.g. the Windows Store stub) instead of Anaconda's.
+**Mac:** Terminal handles every step below, no switching required.
+
 ```bash
 # 1. Install Git LFS once per machine, before cloning
 git lfs install
@@ -124,8 +130,18 @@ cd Specimen_Classifier
 # 3. Confirm the model weights actually downloaded (should be ~100-130MB each,
 #    not a few bytes — if they're tiny, Git LFS wasn't active during clone)
 ls -lh Models/*/*.h5
+```
 
+```bash
 # 4. Install the one dependency Anaconda doesn't ship with by default
+#    (In Anaconda Prompt, `base` is already active, so this is all you need.)
+pip install tensorflow
+```
+
+Using a plain PowerShell window instead of Anaconda Prompt (e.g. VS Code's default integrated terminal)? Activate the environment explicitly first, since PowerShell doesn't always do this automatically:
+
+```powershell
+conda activate base
 pip install tensorflow
 ```
 
@@ -135,27 +151,30 @@ Place your own image data under `Data/` following the [structure above](#data-fo
 
 ## Usage
 
-### 1. Train a model
+### 1. Split a category folder into training/testing
 
-Open [`Code/Train_Model.ipynb`](Code/Train_Model.ipynb) and run it top to bottom. Before running, edit these variables near the top to point at your data and name the run:
+If your images are sorted into one flat folder per category (e.g. `Data/Collection/Carabidae/`, `Data/Collection/Chrysomelidae/`, ...) rather than already split into `training/`/`testing/`, open [`Code/Split_Dataset.ipynb`](Code/Split_Dataset.ipynb) and run it top to bottom. It walks you through picking that source folder, picking an output folder, and choosing a training/testing percentage split (80/20 by default) — no coding required, just two folder-picker pop-ups and one number to edit. It copies images (your originals are left untouched) into the same `training/`/`testing/` layout the other notebooks expect.
+
+### 2. Train a model
+
+Open [`Code/Train_Model.ipynb`](Code/Train_Model.ipynb) and run it top to bottom. Before running, edit these two variables near the top to name the run and point at your data:
 
 ```python
 model_run_name = "InHouse_0603_ResNet50_1"  # change this for every new training run
-
-train_data_dir = r"path\to\Data\<dataset>\training"
-test_data_dir  = r"path\to\Data\<dataset>\testing"
-models_dir     = r"path\to\Models"
+dataset_dir = os.path.join(REPO_ROOT, "Data", "<dataset>")  # change this to point at a different Data/ subfolder
 ```
+
+`REPO_ROOT` is found automatically (it walks up from wherever the notebook is running until it finds this repo's `Models/` folder), so these paths work regardless of whose machine or which folder the repo is cloned into — no need to edit `REPO_ROOT`, `train_data_dir`, `test_data_dir`, or `models_dir` directly.
 
 The notebook trains a ResNet-50 (ImageNet weights, frozen base layers) with early stopping, then writes the [five output files](#trained-model-format) into `Models/<model_run_name>/`.
 
-### 2. Compare models / generate presentation plots
+### 3. Compare models / generate presentation plots
 
 [`Code/Compare_Models_on_Dataset.ipynb`](Code/Compare_Models_on_Dataset.ipynb) scores one or more trained models against a shared dataset and plots per-class and combined ROC/PR curves plus a confusion matrix per model. Open it, select the Anaconda **base** kernel, and edit only its **Config** cell (`DATASET_DIR`, `EVAL_CLASSES`, `MODELS`, `TARGET_CLASS`, `AVERAGING`) to point it at the dataset and models you want to compare — every markdown cell above it explains what each setting does in plain language, so no Python knowledge is needed to change what gets compared. Nothing past the Config cell needs to change. It also supports mapping a model's finer-grained classes down onto a coarser evaluation scheme (e.g. collapsing extra classes into `"Other"`).
 
 Then choose **Run All**. Every plot renders inline in the notebook *and* is saved to `Presentation_Plots/`, with intermediate predictions cached under `Presentation_Plots/cache/` so re-running doesn't re-run inference unless the config actually changed.
 
-### 3. Run the interactive classifier
+### 4. Run the interactive classifier
 
 Open [`Code/Model_UI.ipynb`](Code/Model_UI.ipynb) in VS Code (or Jupyter), select the Anaconda **base** kernel, and choose **Run All**. This opens a separate desktop window — titled **EcoVision Beetle Classifier** — that may appear behind your other windows the first time.
 
