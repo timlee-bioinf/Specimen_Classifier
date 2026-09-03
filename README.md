@@ -1,6 +1,6 @@
 # Intro-to-CV — Specimen Image Classifier
 
-A ResNet-50 image classification pipeline for identifying biological specimens (built and tested on beetle family classification) from photographs. Built for usability in pathology and ecology labs: train a model on your own labelled photos, evaluate it against held-out data, and hand a trained model to a non-technical user through a point-and-click desktop UI — no code required to run it day-to-day.
+A ResNet-50 image classification pipeline for identifying biological specimens (built and tested on beetle family classification) from photographs. Built for usability in pathology and ecology labs: train a model on your own labelled photos, evaluate it against held-out data, and hand a trained model to user through a point-and-click desktop UI — no code required to run it day-to-day.
 
 The interactive classifier is internally named **EcoVision**; you'll see that name in its window title and in some file paths.
 
